@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 
-import { Title, Paragraph } from "@/components/ui/antd";
+import { Flex, LayoutContent, LayoutSider, Title } from "@/components/ui/antd";
 import { publicAssets } from "@/lib/constants";
 import { figmaTokens } from "@/lib/theme";
 
@@ -20,13 +20,8 @@ export function AuthLayout({
   const { colors, spacing, layout } = figmaTokens;
 
   return (
-    <div
-      style={{
-        display: "flex",
-        minHeight: "100vh",
-      }}
-    >
-      <main
+    <Flex style={{ minHeight: "100vh" }}>
+      <LayoutContent
         style={{
           flex: 1,
           display: "flex",
@@ -35,34 +30,39 @@ export function AuthLayout({
           padding: spacing.lg,
         }}
       >
-        <div style={{ width: "100%", maxWidth: layout.authCardMaxWidth }}>{children}</div>
-      </main>
-      <aside
-        style={{
-          flex: 1,
-          display: "none",
-          color: colors.textInverse,
-        }}
+        <Flex vertical style={{ width: "100%", maxWidth: layout.authCardMaxWidth }}>
+          {children}
+        </Flex>
+      </LayoutContent>
+
+      <LayoutSider
         className="auth-brand-panel"
+        width="50%"
+        theme="light"
+        aria-label={`${title} — ${subtitle}`}
+        style={{
+          color: colors.textInverse,
+          position: "relative",
+          background: "transparent",
+        }}
       >
         <Image
           src={publicAssets.images.brand.authBackground}
           alt=""
           fill
           priority
-          sizes="50vw"
           aria-hidden
           className="auth-brand-panel__image"
         />
-        <div style={{ position: "relative", zIndex: 1, padding: spacing.xxl, maxWidth: 480 }}>
+        <Flex
+          vertical
+          style={{ position: "relative", zIndex: 1, padding: spacing.xxl, maxWidth: 480 }}
+        >
           <Title level={2} style={{ color: colors.textInverse, marginTop: 0 }}>
             {title}
           </Title>
-          <Paragraph style={{ color: "rgba(255,255,255,0.82)", fontSize: 16, marginBottom: 0 }}>
-            {subtitle}
-          </Paragraph>
-        </div>
-      </aside>
-    </div>
+        </Flex>
+      </LayoutSider>
+    </Flex>
   );
 }

@@ -45,6 +45,9 @@ export function OrganizationCard({ organization, onSelect }: OrganizationCardPro
 
 - Wrap app in `ConfigProvider` with `direction="rtl"`, `locale={faIR}`, and theme tokens at root layout.
 - Use antd components directly — do not rebuild primitives (Button, Table, Form, Modal).
+- **Layout & structure** — build page and component layout with antd containers (`Layout`, `LayoutContent`, `LayoutSider`, `Flex`, `Row`, `Col`, `Space`, `Card`). Do **not** use raw HTML structural elements (`<div>`, `<main>`, `<aside>`, `<section>`, `<nav>`, `<header>`, `<footer>`) for design structure. Exception: Next.js root `<html>` / `<body>` in `app/layout.tsx` only.
+- **Accessibility without raw landmarks** — antd containers must still meet a11y requirements: use `LayoutContent` (renders `<main>`), `LayoutSider` (renders `<aside>`) where appropriate; add `aria-label`, `role`, and heading hierarchy when a container is not landmark-equivalent; keep form labels and keyboard support.
+- **SEO** — use Next.js `metadata` / `generateMetadata` on route layouts and pages (title, description, openGraph).
 - **Forms**: React Hook Form + Zod for complex forms; simple forms may use antd `Form` with Zod validation rules.
 - **Tables**: use shared `DataTable` wrapper for server-side pagination/sort/filter — do not duplicate table config.
 - **Icons**: `@ant-design/icons` only.
@@ -76,6 +79,8 @@ Never store server data in Zustand. Never call Ky directly inside components —
 - Set `lang="fa"` and `dir="rtl"` on `<html>`.
 - Do not hardcode `margin-left` / `padding-right` for layout — use antd spacing or logical properties.
 - Interactive elements must be keyboard-accessible; associate labels with form fields.
+- Decorative panels/images: `aria-hidden` on the image; expose meaning via `aria-label` on the parent antd container.
+- One `level={1}` heading per page where applicable; do not skip heading levels.
 
 ## Props and composition
 

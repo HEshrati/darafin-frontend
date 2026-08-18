@@ -18,7 +18,7 @@ Do not leave `// @ts-ignore`, `// @ts-expect-error`, `eslint-disable`, or `any` 
 
 ## Implementation standards (mandatory)
 
-In **every** implementation — feature, fix, or refactor — consider **components**, **semantic HTML elements**, **SEO**, and **accessibility** according to project standards and scope. Apply the necessary adjustments (metadata, labels, ARIA, heading hierarchy, keyboard support, etc.) so the result meets those standards before marking the task done.
+In **every** implementation — feature, fix, or refactor — build UI with **Ant Design components and containers**, and still meet **SEO** and **accessibility** standards for the project scope. Apply metadata, ARIA roles/labels, heading hierarchy, keyboard support, and other adjustments on antd containers as needed before marking the task done.
 
 ## Clean code principles
 

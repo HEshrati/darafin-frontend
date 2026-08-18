@@ -43,7 +43,7 @@ export function LoginForm() {
         ورود به سامانه
       </Title>
       <Paragraph type="secondary" style={{ marginBottom: 24 }}>
-        برای ادامه، اطلاعات حساب کاربری خود را وارد کنید.
+      لطفا اطلاعات سرپرست را وارد کنید.
       </Paragraph>
 
       <form onSubmit={handleSubmit(onSubmit)} noValidate>

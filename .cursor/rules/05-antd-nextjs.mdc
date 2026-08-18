@@ -49,10 +49,10 @@ Marking a page `'use client'` avoids the error but forfeits SSR for that page. P
 
 ## Adding new subcomponents
 
-When you need another dotted API (e.g. `Select.Option`, `Tabs.TabPane`):
+When you need another dotted API (e.g. `Select.Option`, `Tabs.TabPane`, `Layout.Content`, `Layout.Sider`):
 
 1. Add a `'use client'` re-export in `src/components/ui/antd/`.
-2. Export a named component (e.g. `SelectOption`).
+2. Export a named component (e.g. `SelectOption`, `LayoutContent`).
 3. Never use dot notation in JSX.
 
 ## References
