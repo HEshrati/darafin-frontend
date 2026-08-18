@@ -1,26 +1,40 @@
-@import "tailwindcss";
-
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #1f2937;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  height: 100%;
 }
 
 body {
+  margin: 0;
+  min-height: 100%;
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-vazirmatn), Tahoma, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Auth split layout — brand panel visible on desktop */
+@media (min-width: 992px) {
+  .auth-brand-panel {
+    display: flex !important;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .auth-brand-panel__image {
+    object-fit: cover;
+    object-position: center;
+    /* Crop built-in margins in the source PNG */
+    transform: scale(1.12);
+  }
+}
+
+/* Ant Design overrides that are easier in CSS than component tokens */
+.ant-app {
+  min-height: 100vh;
 }

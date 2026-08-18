@@ -16,6 +16,10 @@ After **every** implementation — feature, fix, or refactor — resolve all err
 
 Do not leave `// @ts-ignore`, `// @ts-expect-error`, `eslint-disable`, or `any` as shortcuts unless there is a documented, unavoidable reason in a code comment.
 
+## Implementation standards (mandatory)
+
+In **every** implementation — feature, fix, or refactor — consider **components**, **semantic HTML elements**, **SEO**, and **accessibility** according to project standards and scope. Apply the necessary adjustments (metadata, labels, ARIA, heading hierarchy, keyboard support, etc.) so the result meets those standards before marking the task done.
+
 ## Clean code principles
 
 - **Minimal diff** — change only what the task requires; no drive-by refactors.

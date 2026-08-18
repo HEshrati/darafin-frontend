@@ -16,8 +16,21 @@ src/
 ├── lib/                    # Cross-cutting utilities (api/, utils/, constants/)
 ├── stores/                 # Zustand stores (UI state only)
 ├── types/                  # Shared global types
+├── assets/                 # Bundled static files (imported in code)
 └── mocks/                  # MSW handlers and mock data
 ```
+
+## Static assets
+
+Two locations — choose based on how the file is used:
+
+| Location | Served at | Use when |
+|----------|-----------|----------|
+| `public/images/…` | `/images/…` | Logos, OG images, favicon, downloadable files, stable URLs |
+| `src/assets/…` | Bundled import | Component-only images, build-time optimization |
+| `src/features/{feature}/assets/` | Bundled import | Asset used by a single feature only |
+
+Register public paths in `src/lib/constants/assets.ts`. See `public/images/README.md` and `src/assets/README.md`.
 
 ## Feature module structure
 

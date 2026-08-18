@@ -49,6 +49,7 @@ export function OrganizationCard({ organization, onSelect }: OrganizationCardPro
 - **Tables**: use shared `DataTable` wrapper for server-side pagination/sort/filter — do not duplicate table config.
 - **Icons**: `@ant-design/icons` only.
 - **Messages**: use `App.useApp()` hook for `message` / `notification` inside client components.
+- **Subcomponents**: never use dot notation (`Form.Item`, `Typography.Title`). Import from `@/components/ui/antd` — see `05-antd-nextjs.mdc`.
 
 ## State management boundaries
 

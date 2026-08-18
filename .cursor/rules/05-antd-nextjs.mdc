@@ -1,0 +1,61 @@
+---
+description: Ant Design subcomponent imports for Next.js App Router compatibility
+globs: "**/*.{ts,tsx}"
+alwaysApply: false
+---
+
+# Ant Design — Next.js App Router
+
+## Do not use dot notation for subcomponents
+
+Next.js App Router **cannot serialize** antd compound subcomponents accessed via dot notation when they cross the server/client boundary.
+
+```tsx
+// BAD — breaks in Server Components or when imported from server parents
+<Form.Item>...</Form.Item>
+<Typography.Title>...</Typography.Title>
+<Input.Password />
+<Select.Option />
+<Menu.Item />
+```
+
+Error you may see:
+
+```text
+Cannot access .Item on the server. You cannot dot into a client module from a server component.
+```
+
+Top-level antd imports (`Button`, `Card`, `Table`) are fine. The issue is **static subcomponents on client modules**.
+
+## Required pattern
+
+Import subcomponents from `@/components/ui/antd` (project wrappers) or directly from antd paths:
+
+```tsx
+import { Form, FormItem } from "@/components/ui/antd";
+import { Title, Paragraph } from "@/components/ui/antd";
+import { Input, PasswordInput } from "@/components/ui/antd";
+
+<Form>
+  <FormItem label="نام کاربری">
+    <Input />
+  </FormItem>
+</Form>
+```
+
+## When `'use client'` is not enough
+
+Marking a page `'use client'` avoids the error but forfeits SSR for that page. Prefer named subcomponent imports so pages and layouts can stay Server Components where possible.
+
+## Adding new subcomponents
+
+When you need another dotted API (e.g. `Select.Option`, `Tabs.TabPane`):
+
+1. Add a `'use client'` re-export in `src/components/ui/antd/`.
+2. Export a named component (e.g. `SelectOption`).
+3. Never use dot notation in JSX.
+
+## References
+
+- [Ant Design — Use with Next.js](https://ant.design/docs/react/use-with-next/)
+- [Ant Design FAQ — App Router subcomponents](https://ant.design/docs/react/faq)

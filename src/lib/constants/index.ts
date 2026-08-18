@@ -1,0 +1,1 @@
+export { publicAssets } from "./assets";
