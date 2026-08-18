@@ -1,0 +1,79 @@
+---
+description: Comment style, lint/build error resolution, and non-TS error handling
+globs: "**/*.{ts,tsx,js,mjs}"
+alwaysApply: false
+---
+
+# Comments & Error Resolution
+
+## Comment philosophy
+
+Code should be **self-documenting** first. Comments explain **why**, not **what**.
+
+### Write a comment when
+
+- Business rules are non-obvious (maker-checker, MFA gates, idempotency guards).
+- A workaround exists for a library bug or backend quirk — include issue/link.
+- An algorithm or financial calculation needs justification.
+- Public utility/hook has non-obvious constraints — use JSDoc.
+
+### Do not comment when
+
+- The code already reads clearly (`// increment counter` above `count++`).
+- Restating the function name or prop name.
+- Leaving commented-out code "for later" — delete it; git has history.
+
+## Comment style
+
+```typescript
+// Single-line: sentence case, no period for fragments.
+
+/**
+ * Multi-line JSDoc for exported hooks, utilities, and complex functions.
+ * @param scope - Permission scope from membership (e.g. 'approve_financing')
+ */
+```
+
+- Use **English** for all comments (codebase language is English; UI strings are Persian).
+- Keep comments **short** — one or two lines max inline; expand only in JSDoc when needed.
+- Group related constants with a single block comment, not per-line noise.
+
+## Resolving non-TypeScript errors
+
+### ESLint
+
+- Fix the violation; do not disable the rule unless team-approved and documented inline.
+- Run `yarn lint` after every implementation.
+- Common fixes: unused vars (remove), missing deps in `useEffect` (add or justify), import order.
+
+### Build errors (Next.js)
+
+- **Module not found** — fix import path or add missing dependency.
+- **Server/client boundary** — move hook usage to a client component; add `'use client'`.
+- **Metadata / static export** — ensure server-only APIs are not imported in client bundles.
+
+### Runtime errors
+
+- Reproduce in dev, fix root cause, add a guard or error boundary where appropriate.
+- API errors: handle in Ky client + TanStack Query `onError`; show user-facing Persian message.
+
+### Test failures (when tests exist)
+
+- Fix implementation or update test if requirements changed — never delete tests to green the build.
+
+## Error boundaries
+
+- Use `error.tsx` at route segments for recoverable page-level failures.
+- Feature-critical flows (payment, approval) should show actionable retry UI, not a blank screen.
+
+## Checklist before marking work complete
+
+```
+[ ] No TypeScript errors in changed files
+[ ] yarn lint passes
+[ ] yarn build passes (if in scope)
+[ ] No unjustified @ts-ignore / eslint-disable
+[ ] No commented-out code blocks
+[ ] Comments only where WHY is non-obvious
+[ ] Manual smoke test of affected UI
+```

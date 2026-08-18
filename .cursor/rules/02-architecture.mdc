@@ -1,0 +1,97 @@
+---
+description: Folder structure, feature modules, and file placement conventions
+globs: "src/**/*"
+alwaysApply: false
+---
+
+# Architecture & Folder Structure
+
+## Top-level layout
+
+```
+src/
+├── app/                    # Next.js routes only — thin pages that compose features
+├── features/               # Domain modules (auth, organizations, invoices, …)
+├── components/             # Shared, domain-agnostic UI (ui/, layout/, feedback/)
+├── lib/                    # Cross-cutting utilities (api/, utils/, constants/)
+├── stores/                 # Zustand stores (UI state only)
+├── types/                  # Shared global types
+└── mocks/                  # MSW handlers and mock data
+```
+
+## Feature module structure
+
+Each feature under `src/features/{feature-name}/` follows the same shape:
+
+```
+features/organizations/
+├── components/             # Feature-specific components
+├── hooks/                  # useOrganizations, useOrgMembers, …
+├── schemas.ts              # Zod schemas
+├── types.ts                # Feature types (until OpenAPI codegen replaces them)
+├── api.ts                  # Ky calls or query/mutation functions
+├── constants.ts            # Feature constants (optional)
+└── index.ts                # Public barrel export — only expose what other features need
+```
+
+### Rules
+
+- **`app/` pages are thin** — import from `@/features/...`, no business logic in `page.tsx`.
+- **No cross-feature deep imports** — import via `@/features/foo` barrel, not `@/features/foo/components/internal/...`.
+- **Colocate by feature** — if only one feature uses it, keep it inside that feature.
+- **Promote to `components/`** when used by 2+ features.
+
+## `app/` routing conventions
+
+```
+app/
+├── (auth)/                 # Route group — no auth required
+│   └── login/page.tsx
+├── (dashboard)/            # Route group — authenticated layout
+│   ├── layout.tsx
+│   ├── dashboard/page.tsx
+│   └── organizations/
+│       ├── page.tsx
+│       └── [id]/page.tsx
+└── layout.tsx              # Root layout (RTL, providers, fonts)
+```
+
+- Use **route groups** `(auth)` / `(dashboard)` for layout boundaries.
+- Dynamic segments: `[id]`, `[...slug]` — folder names match Next.js conventions.
+- `loading.tsx`, `error.tsx`, `not-found.tsx` colocated per route segment when needed.
+
+## `lib/` conventions
+
+```
+lib/
+├── api/
+│   ├── client.ts           # Ky instance (auth, retry, error parsing)
+│   ├── query-client.ts     # TanStack Query client config
+│   └── generated/          # OpenAPI codegen output (do not edit manually)
+└── utils/
+    ├── format-money.ts
+    └── format-date.ts
+```
+
+## `components/` conventions
+
+```
+components/
+├── ui/                     # Thin wrappers around antd if needed
+├── layout/                 # AppShell, Sidebar, Header, PageHeader
+└── feedback/               # EmptyState, ErrorAlert, LoadingSpinner
+```
+
+## File naming
+
+| Content | File name |
+|---------|-----------|
+| Page | `page.tsx` (in `app/` only) |
+| Layout | `layout.tsx` |
+| Component | `{component-name}.tsx` |
+| Hook | `use-{name}.ts` |
+| Store | `{name}-store.ts` |
+| Test | `{name}.test.ts` or `{name}.spec.ts` |
+| MSW handler | `{feature}.handlers.ts` |
+
+One default export component per file. Name the file after the component.

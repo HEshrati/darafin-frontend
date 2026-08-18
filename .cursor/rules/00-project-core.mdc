@@ -1,0 +1,54 @@
+---
+description: Core workflow, quality gates, and naming conventions for Darafin frontend
+alwaysApply: true
+---
+
+# Darafin Frontend — Core Standards
+
+## Post-implementation quality gate (mandatory)
+
+After **every** implementation — feature, fix, or refactor — resolve all errors before considering the task done:
+
+1. **TypeScript** — no type errors in changed files or downstream imports (`tsc --noEmit` or IDE diagnostics).
+2. **Lint** — run `yarn lint` and fix all reported issues in scope.
+3. **Build** — run `yarn build` when changes affect routing, config, env, or shared modules.
+4. **Runtime** — verify the affected page/flow in dev when behavior changed.
+
+Do not leave `// @ts-ignore`, `// @ts-expect-error`, `eslint-disable`, or `any` as shortcuts unless there is a documented, unavoidable reason in a code comment.
+
+## Clean code principles
+
+- **Minimal diff** — change only what the task requires; no drive-by refactors.
+- **Single responsibility** — one reason to change per module, component, or hook.
+- **No dead code** — remove unused imports, variables, exports, and commented-out blocks.
+- **Explicit over clever** — prefer readable code over abstractions used once.
+- **Fail visibly** — surface API and validation errors to the user; never swallow errors silently.
+
+## Naming conventions
+
+| Kind | Convention | Example |
+|------|------------|---------|
+| Files (components) | `kebab-case.tsx` | `organization-switcher.tsx` |
+| Files (utilities/hooks) | `kebab-case.ts` | `use-permission.ts` |
+| React components | `PascalCase` | `OrganizationSwitcher` |
+| Functions / variables | `camelCase` | `fetchOrganizations` |
+| Constants | `SCREAMING_SNAKE_CASE` | `API_BASE_URL` |
+| Types / interfaces | `PascalCase` | `Organization`, `AuthTokens` |
+| Zustand stores | `useXxxStore` | `useOrgStore` |
+| Query keys | tuple arrays, namespaced | `['organizations', orgId, 'members']` |
+
+Use **full words** over abbreviations (`organization` not `org` in public APIs; `orgId` is fine for IDs).
+
+## Import order
+
+1. React / Next.js
+2. External libraries (antd, tanstack, zod, …)
+3. `@/` absolute imports (features, components, lib, stores)
+4. Relative imports
+5. Type-only imports (`import type { … }`)
+
+Separate groups with a blank line. Use `@/` path alias — never deep relative paths like `../../../`.
+
+## Official stack (do not substitute)
+
+Next.js App Router · Auth.js · Ant Design v5 · Zustand (UI state) · TanStack Query (server state) · React Hook Form + Zod · Ky · Ant Design Table · Pusher

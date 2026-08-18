@@ -1,0 +1,65 @@
+---
+description: TypeScript strictness and error-resolution standards
+globs: "**/*.{ts,tsx}"
+alwaysApply: false
+---
+
+# TypeScript Standards
+
+## Strict mode is non-negotiable
+
+`strict: true` is enabled. Every implementation must compile cleanly with zero TypeScript errors.
+
+### Required practices
+
+- Type all function parameters and return values on exported functions.
+- Type component props with an explicit interface or type alias named `{ComponentName}Props`.
+- Prefer `interface` for object shapes; use `type` for unions, intersections, and mapped types.
+- Use `unknown` + narrowing instead of `any`. If `any` is unavoidable, constrain scope and add a `TODO` with reason.
+- Use `satisfies` for config objects that must infer literal types.
+- Derive types from Zod schemas (`z.infer<typeof schema>`) for form and API payloads.
+- Prefer generated OpenAPI types over hand-written duplicates once codegen is set up.
+
+### Forbidden patterns
+
+```typescript
+// BAD — unchecked any
+const data: any = await response.json();
+
+// GOOD — typed response
+const data = await api.get<Organization[]>('organizations').json();
+```
+
+```typescript
+// BAD — non-null assertion without guard
+const name = user!.name;
+
+// GOOD — explicit guard
+if (!user) return null;
+const name = user.name;
+```
+
+## Error resolution workflow
+
+When TypeScript errors appear after a change:
+
+1. Fix the root cause (wrong type, missing null check, incorrect import) — do not suppress.
+2. If a dependency type is wrong, add a minimal local type augmentation or wrapper — not a project-wide `any`.
+3. Re-check all files that import the changed module.
+4. Confirm generics on TanStack Query hooks match API return types.
+
+## File-level type organization
+
+- **Shared domain types** → `src/types/` or `src/features/{feature}/types.ts`
+- **Component-only props** → top of the same `.tsx` file or `{name}.types.ts` colocated
+- **API types** → `src/lib/api/types/` or generated from OpenAPI
+- **Zod schemas** → `src/features/{feature}/schemas.ts` next to forms that use them
+
+## Enums and unions
+
+Prefer string literal unions or `as const` objects over TypeScript `enum`:
+
+```typescript
+export const INVOICE_STATUSES = ['draft', 'submitted', 'approved', 'rejected'] as const;
+export type InvoiceStatus = (typeof INVOICE_STATUSES)[number];
+```

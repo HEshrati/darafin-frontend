@@ -1,0 +1,83 @@
+---
+description: React and Ant Design component design patterns
+globs: "**/*.tsx"
+alwaysApply: false
+---
+
+# React & Component Design
+
+## Component categories
+
+| Type | Role | State & data |
+|------|------|--------------|
+| **Page** (`app/.../page.tsx`) | Route entry, compose layout + features | Server or client; minimal logic |
+| **Feature component** | Domain UI (`features/.../components/`) | TanStack Query for server data; Zustand for UI-only |
+| **Shared component** (`components/`) | Reusable, domain-agnostic | Props in, events out — no direct API calls |
+| **Provider** | Context / Query / Ant Design config | Wrap at layout level |
+
+## Component structure (consistent order)
+
+```tsx
+'use client'; // only when required (hooks, events, browser APIs)
+
+import type { FC } from 'react';
+// ... imports per import-order rule
+
+interface OrganizationCardProps {
+  organization: Organization;
+  onSelect: (id: string) => void;
+}
+
+export function OrganizationCard({ organization, onSelect }: OrganizationCardProps) {
+  // 1. hooks (query, store, form, router)
+  // 2. derived state / memoized values
+  // 3. handlers
+  // 4. early returns (loading, error, empty)
+  // 5. render
+}
+```
+
+- Prefer **named exports** for components (`export function Foo`).
+- Add `'use client'` only when the file needs it — default to Server Components in `app/` where possible.
+- Keep components **under ~150 lines**; extract subcomponents or hooks when larger.
+
+## Ant Design v5 conventions
+
+- Wrap app in `ConfigProvider` with `direction="rtl"`, `locale={faIR}`, and theme tokens at root layout.
+- Use antd components directly — do not rebuild primitives (Button, Table, Form, Modal).
+- **Forms**: React Hook Form + Zod for complex forms; simple forms may use antd `Form` with Zod validation rules.
+- **Tables**: use shared `DataTable` wrapper for server-side pagination/sort/filter — do not duplicate table config.
+- **Icons**: `@ant-design/icons` only.
+- **Messages**: use `App.useApp()` hook for `message` / `notification` inside client components.
+
+## State management boundaries
+
+| Data | Tool |
+|------|------|
+| API / cache / mutations | TanStack Query (`useQuery`, `useMutation`) |
+| UI (modal open, sidebar, wizard step, active org selection) | Zustand |
+| Form field state | React Hook Form |
+| URL state (filters, pagination) | `useSearchParams` / Next.js router |
+
+Never store server data in Zustand. Never call Ky directly inside components — go through `features/.../api.ts` or query hooks.
+
+## Consistent UI patterns
+
+- **Loading** — `Skeleton` or shared `LoadingSpinner`; match layout dimensions.
+- **Empty** — shared `EmptyState` with action button when applicable.
+- **Errors** — shared `ErrorAlert`; show Persian API `detail` from Ky error handler.
+- **Confirm destructive actions** — `Modal.confirm` with clear labels.
+- **Money** — always use `MoneyDisplay` / `formatMoney()` for IRR amounts.
+- **Dates** — Jalali picker for user input; ISO strings in API payloads.
+
+## Accessibility & RTL
+
+- Set `lang="fa"` and `dir="rtl"` on `<html>`.
+- Do not hardcode `margin-left` / `padding-right` for layout — use antd spacing or logical properties.
+- Interactive elements must be keyboard-accessible; associate labels with form fields.
+
+## Props and composition
+
+- Prefer **composition** (`children`, render props) over boolean prop explosion (`showX`, `hideY`, `enableZ`).
+- Destructure props in the function signature.
+- Default optional props inline or via destructuring defaults — not `defaultProps` on function components.
