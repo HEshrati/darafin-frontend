@@ -8,6 +8,7 @@ Use this for images tied to a specific component when you do **not** need a stab
 
 | Path | Purpose |
 |------|---------|
+| `fonts/` | Self-hosted woff2 files (loaded via `next/font/local` in `src/lib/fonts/`) |
 | `images/` | Component-specific raster/SVG imports |
 | `icons/` | Small inline SVGs (if not using `@ant-design/icons`) |
 

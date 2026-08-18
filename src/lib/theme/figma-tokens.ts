@@ -34,7 +34,7 @@ export const figmaTokens = {
   },
   typography: {
     /** Figma: font/family/primary */
-    fontFamily: "var(--font-vazirmatn), Tahoma, sans-serif",
+    fontFamily: "var(--font-iran-sans), Tahoma, sans-serif",
     fontSizeBase: 14,
     fontSizeHeading1: 30,
     fontSizeHeading2: 24,
