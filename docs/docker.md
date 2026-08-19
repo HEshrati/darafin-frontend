@@ -5,7 +5,7 @@ How to run the Next.js frontend with Docker alongside the Django/DRF backend.
 ## Prerequisites
 
 - Docker & Docker Compose
-- Node 20 (see `.nvmrc`) for local non-Docker development
+- Node 22 (see `.nvmrc`) for local non-Docker development
 
 ## Environment variables
 
@@ -67,6 +67,18 @@ docker run --rm -p 3000:3000 \
 ```
 
 Health check: `GET http://localhost:3000/api/health`
+
+### Published image
+
+Every push to `main` publishes an immutable `sha-*` tag and updates `latest` in GitHub Container
+Registry:
+
+```bash
+docker pull ghcr.io/setyhoseini81/darafin-frontend:latest
+```
+
+The full-stack Compose file in the backend repository uses this image, while retaining a local
+build definition as a fallback for development.
 
 ## Full stack (example for backend team)
 
