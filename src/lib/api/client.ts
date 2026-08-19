@@ -2,11 +2,13 @@ import ky, { type KyInstance } from "ky";
 
 import { getPublicEnv } from "@/lib/env/public-env";
 
+import { normalizeApiBaseUrl } from "./base-url";
+
 function createApiClient(): KyInstance {
   const { NEXT_PUBLIC_API_URL } = getPublicEnv();
 
   return ky.create({
-    baseUrl: NEXT_PUBLIC_API_URL,
+    baseUrl: normalizeApiBaseUrl(NEXT_PUBLIC_API_URL),
     timeout: 30_000,
     retry: {
       limit: 2,

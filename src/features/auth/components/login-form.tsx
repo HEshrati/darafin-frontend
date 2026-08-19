@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
-import { App, Button, Card } from "antd";
+import { Alert, App, Button, Card } from "antd";
 import { Controller, useForm } from "react-hook-form";
 
 import {
@@ -15,6 +15,7 @@ import {
   Title,
 } from "@/components/ui/antd";
 
+import { login } from "../api";
 import { loginSchema, type LoginFormValues } from "../schemas";
 
 export function LoginForm() {
@@ -22,6 +23,9 @@ export function LoginForm() {
   const {
     control,
     handleSubmit,
+    clearErrors,
+    resetField,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -32,9 +36,18 @@ export function LoginForm() {
   });
 
   const onSubmit = async (values: LoginFormValues) => {
-    // Warm-up only — wire to Auth.js + API on Day 5
-    await new Promise((resolve) => setTimeout(resolve, 600));
-    message.success(`خوش آمدید، ${values.username}`);
+    clearErrors("root");
+
+    try {
+      const user = await login(values);
+      resetField("password");
+      message.success(`خوش آمدید، ${user.username}`);
+    } catch (error) {
+      setError("root", {
+        type: "server",
+        message: error instanceof Error ? error.message : "ورود انجام نشد. لطفاً دوباره تلاش کنید.",
+      });
+    }
   };
 
   return (
@@ -48,6 +61,15 @@ export function LoginForm() {
 
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
         <Form component="div" layout="vertical" requiredMark={false}>
+          {errors.root?.message ? (
+            <Alert
+              type="error"
+              showIcon
+              message={errors.root.message}
+              style={{ marginBottom: 16 }}
+            />
+          ) : null}
+
           <FormItem
             label="نام کاربری"
             validateStatus={errors.username ? "error" : undefined}
