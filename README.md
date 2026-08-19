@@ -1,36 +1,75 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Darafin Frontend
 
-## Getting Started
+Next.js App Router frontend for the Darafin pharmaceutical supply chain financing platform. Integrates with a Django/DRF backend.
 
-First, run the development server:
+## Stack
+
+Next.js · Ant Design · Auth.js · TanStack Query · React Hook Form + Zod · Ky
+
+See [docs/adr/0001-frontend-stack.md](docs/adr/0001-frontend-stack.md) for architecture decisions.
+
+## Getting started (local)
 
 ```bash
-npm run dev
-# or
+yarn install
+cp .env.example .env
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Environment variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+See [.env.example](.env.example) for the full list. Minimum for local dev:
 
-## Learn More
+| Variable | Example |
+|----------|---------|
+| `NEXT_PUBLIC_API_URL` | `http://localhost:8000/api/v1` |
+| `NEXT_PUBLIC_APP_URL` | `http://localhost:3000` |
 
-To learn more about Next.js, take a look at the following resources:
+Server-only vars (`API_URL`, `AUTH_SECRET`, `AUTH_URL`) are required once Auth.js and server-side API calls are wired.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Docker
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+See [docs/docker.md](docs/docker.md) for:
 
-## Deploy on Vercel
+- Development and production Dockerfiles
+- Environment variable contract (browser vs server URLs)
+- Example `docker-compose` service for the backend team
+- Health check endpoint: `/api/health`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Quick dev container:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+docker build -f Dockerfile.dev -t darafin-frontend-dev .
+docker run --rm -p 3000:3000 --env-file .env -v "$(pwd):/app" -v /app/node_modules darafin-frontend-dev
+```
+
+## Scripts
+
+| Command | Description |
+|---------|-------------|
+| `yarn dev` | Start dev server |
+| `yarn build` | Production build (standalone output for Docker) |
+| `yarn start` | Run production server |
+| `yarn lint` | ESLint |
+
+## Project structure
+
+```
+src/
+├── app/           # Routes (thin pages)
+├── features/      # Domain modules (auth, …)
+├── components/    # Shared UI
+├── lib/           # api/, env/, theme/, constants/
+└── assets/        # Bundled static files (fonts, …)
+```
+
+Public static files: `public/images/…` — register paths in `src/lib/constants/assets.ts`.
+
+## API client
+
+- **Client components:** `import { apiClient } from "@/lib/api"`
+- **Server code:** `import { createServerApiClient } from "@/lib/api"`
+
+Env validation: `@/lib/env` (`getPublicEnv`, `getServerEnv`).
