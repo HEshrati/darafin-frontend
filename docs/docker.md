@@ -74,7 +74,7 @@ Every push to `main` publishes an immutable `sha-*` tag and updates `latest` in 
 Registry:
 
 ```bash
-docker pull ghcr.io/setyhoseini81/darafin-frontend:latest
+docker pull ghcr.io/heshrati/darafin-frontend:latest
 ```
 
 The full-stack Compose file in the backend repository uses this image, while retaining a local

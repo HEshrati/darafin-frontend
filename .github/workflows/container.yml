@@ -30,7 +30,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/setyhoseini81/darafin-frontend
+          images: ghcr.io/heshrati/darafin-frontend
           tags: |
             type=raw,value=latest
             type=sha,prefix=sha-
