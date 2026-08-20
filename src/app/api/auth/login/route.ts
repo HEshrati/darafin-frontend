@@ -1,12 +1,10 @@
-import { HTTPError } from "ky";
-
+import { loginSchema } from "@/features/auth/schemas";
 import {
-  authUserSchema,
-  loginSchema,
-  tokenPairSchema,
-} from "@/features/auth/schemas";
+  BackendApiError,
+  getCurrentUser,
+  issueToken,
+} from "@/features/auth/server/auth-api";
 import { setSessionCookies } from "@/features/auth/server/session-cookies";
-import { createServerApiClient } from "@/lib/api";
 
 const NO_STORE_HEADERS = {
   "Cache-Control": "no-store",
@@ -30,16 +28,13 @@ export async function POST(request: Request): Promise<Response> {
 
   let tokens;
   try {
-    const tokenPayload: unknown = await createServerApiClient()
-      .post("auth/token", { json: credentials.data })
-      .json();
-    tokens = tokenPairSchema.parse(tokenPayload);
+    tokens = await issueToken(credentials.data);
   } catch (error) {
-    if (error instanceof HTTPError) {
-      if (error.response.status === 400 || error.response.status === 401) {
+    if (error instanceof BackendApiError) {
+      if (error.status === 400 || error.status === 401) {
         return errorResponse("نام کاربری یا رمز عبور نادرست است.", 401);
       }
-      if (error.response.status === 429) {
+      if (error.status === 429) {
         return errorResponse("تعداد تلاش‌ها بیش از حد مجاز است. کمی بعد دوباره تلاش کنید.", 429);
       }
     }
@@ -49,8 +44,7 @@ export async function POST(request: Request): Promise<Response> {
   }
 
   try {
-    const userPayload: unknown = await createServerApiClient(tokens.access).get("me").json();
-    const user = authUserSchema.parse(userPayload);
+    const user = await getCurrentUser(tokens.access);
 
     await setSessionCookies(tokens);
 

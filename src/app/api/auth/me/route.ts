@@ -1,12 +1,13 @@
-import { HTTPError } from "ky";
-
-import { accessTokenSchema, authUserSchema } from "@/features/auth/schemas";
+import {
+  BackendApiError,
+  getCurrentUser,
+  refreshAccessToken,
+} from "@/features/auth/server/auth-api";
 import {
   clearSessionCookies,
   getSessionTokens,
   setAccessTokenCookie,
 } from "@/features/auth/server/session-cookies";
-import { createServerApiClient } from "@/lib/api";
 
 const NO_STORE_HEADERS = {
   "Cache-Control": "no-store",
@@ -16,13 +17,8 @@ function errorResponse(message: string, status: number): Response {
   return Response.json({ message }, { status, headers: NO_STORE_HEADERS });
 }
 
-async function getCurrentUser(accessToken: string) {
-  const payload: unknown = await createServerApiClient(accessToken).get("me").json();
-  return authUserSchema.parse(payload);
-}
-
 function isUnauthorized(error: unknown): boolean {
-  return error instanceof HTTPError && (error.response.status === 400 || error.response.status === 401);
+  return error instanceof BackendApiError && (error.status === 400 || error.status === 401);
 }
 
 function safeErrorMessage(error: unknown): string {
@@ -50,10 +46,7 @@ export async function GET(): Promise<Response> {
   }
 
   try {
-    const refreshPayload: unknown = await createServerApiClient()
-      .post("auth/refresh", { json: { refresh: refreshToken } })
-      .json();
-    const { access } = accessTokenSchema.parse(refreshPayload);
+    const access = await refreshAccessToken(refreshToken);
     const user = await getCurrentUser(access);
 
     await setAccessTokenCookie(access);
